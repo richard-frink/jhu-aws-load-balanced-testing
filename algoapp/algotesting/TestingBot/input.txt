@@ -1,0 +1,2 @@
+s1 bubblesort
+s2 shellsort
