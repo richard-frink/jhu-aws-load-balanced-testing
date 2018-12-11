@@ -8,6 +8,16 @@ import numpy as np
 import math
 from cv2 import VideoWriter, VideoWriter_fourcc, imread, resize
 
+from flask import Flask, render_template
+from flask_bootstrap import Bootstrap
+
+app = Flask(__name__)
+Bootstrap(app)
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
 img = np.zeros((200, 200, 3), dtype='float32')  # hsv works in range from 0 - 1
 
 class Sorter:
@@ -191,6 +201,9 @@ if __name__ == '__main__':
     sort(algo)
     images = [algo+"/"+f for f in listdir(algo) if isfile(join(algo, f))]
     vid = makevideo(images, algo, algo+".mp4")
+
+    app.run(debug=True)
+
     # show video when finished for every environment, no need to get crazy
     # ex - one sorting algo per server
     #    only thing different per environment will be the button they can press

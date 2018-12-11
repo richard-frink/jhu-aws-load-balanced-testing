@@ -1,0 +1,24 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}This is an example page{% endblock %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("button").click(function(){
+        alert("test");
+    });
+});
+</script>
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-fixed-top">
+    <!-- ... -->
+</div>
+{% endblock %}
+
+{% block content %}
+    <h1>Hello, Bootstrap</h1>
+    <button>Click me</button>
+{% endblock %}
