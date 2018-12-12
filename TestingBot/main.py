@@ -194,7 +194,7 @@ Bootstrap(app)
 @app.route("/", methods=['GET'])
 def home():
     algoname = ""
-    with open("static/input.txt") as f:
+    with open("input.txt") as f:
         algoname = f.readlines()[0]
     algo = {'name': algoname}
     return render_template("index.html", algo=algo)
