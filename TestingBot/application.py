@@ -187,11 +187,17 @@ def clearall():
         clearalgo(algo)
 
 
-app = Flask(__name__, static_url_path='/static')
-Bootstrap(app)
+application = Flask(__name__, static_url_path='/static')
+Bootstrap(application)
 
 
-@app.route("/", methods=['GET'])
+
+@application.route("/index.html", methods=['GET'])
+def index():
+    return home()
+
+
+@application.route("/", methods=['GET'])
 def home():
     algoname = ""
     with open("input.txt") as f:
@@ -200,7 +206,7 @@ def home():
     return render_template("index.html", algo=algo)
 
 
-@app.route("/sort", methods=['POST'])
+@application.route("/sort", methods=['POST'])
 def run_sort():
     clearall()
     algo = request.form["name"]
@@ -215,4 +221,4 @@ def run_sort():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    application.run(debug=True)
