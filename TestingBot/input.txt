@@ -1,4 +1,1 @@
-bubble
-insertion
 shell
-heap

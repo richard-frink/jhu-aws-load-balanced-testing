@@ -1,5 +1,4 @@
-from testingapp.testing.DataAccess import FileReader
-
+import TestingBot.FileReader as fr
 
 class SystemConfiguration:
     def getalgos(self):
@@ -10,5 +9,5 @@ class SystemConfiguration:
         return algos
 
     def __init__(self, filename):
-        self.filereader = FileReader(filename)
+        self.filereader = fr(filename)
         self.sortingalgos = self.getalgos()

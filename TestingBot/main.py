@@ -1,22 +1,14 @@
-from skimage import color
-from scipy.misc import imsave
 import os
 import glob
 from os import listdir
 from os.path import isfile, join
 import numpy as np
 import math
+from skimage import color
+from scipy.misc import imsave
 from cv2 import VideoWriter, VideoWriter_fourcc, imread, resize
-
-from flask import Flask, render_template
+from flask import Flask, render_template, request, send_from_directory
 from flask_bootstrap import Bootstrap
-
-app = Flask(__name__)
-Bootstrap(app)
-
-@app.route("/")
-def home():
-    return render_template("index.html")
 
 img = np.zeros((200, 200, 3), dtype='float32')  # hsv works in range from 0 - 1
 
@@ -160,7 +152,7 @@ def sort(selection):
             movie_image_frame += 1
         currentMove += 1
 
-def makevideo(images, algo, outimg, fps=24, size=None,
+def makevideo(images, fps=24, size=None,
                is_color=True, format="mp4v"):
 
     fourcc = VideoWriter_fourcc(*format)
@@ -172,39 +164,55 @@ def makevideo(images, algo, outimg, fps=24, size=None,
         if vid is None:
             if size is None:
                 size = img.shape[1], img.shape[0]
-            vid = VideoWriter(algo+"/"+outimg, fourcc, float(fps), size, is_color)
+            vid = VideoWriter("static/sort.mp4", fourcc, float(fps), size, is_color)
         if size[0] != img.shape[1] and size[1] != img.shape[0]:
             img = resize(img, size)
         vid.write(img)
     vid.release()
     return vid
 
+
 def clearalgo(algo):
     files = glob.glob(algo+"/*")
     for f in files:
         os.remove(f)
+    files = glob.glob("static/*")
+    for f in files:
+        os.remove(f)
 
-if __name__ == '__main__':
-    # sort("bubble")
-    # sort("insertion")
-    # sort("shell")
-    # sort("heap")
-    # have different endpoints
-    # read input
-    # run sort based off input
-    # create video
+
+def clearall():
     algos = ["bubble", "insertion", "shell", "heap"]
     for algo in algos:
         clearalgo(algo)
 
-    algo = "insertion"
+
+app = Flask(__name__, static_url_path='/static')
+Bootstrap(app)
+
+
+@app.route("/", methods=['GET'])
+def home():
+    algoname = ""
+    with open("input.txt") as f:
+        algoname = f.readlines()[0]
+    algo = {'name': algoname}
+    return render_template("index.html", algo=algo)
+
+
+@app.route("/sort", methods=['POST'])
+def run_sort():
+    clearall()
+    algo = request.form["name"]
     sort(algo)
     images = [algo+"/"+f for f in listdir(algo) if isfile(join(algo, f))]
-    vid = makevideo(images, algo, algo+".mp4")
+    try:
+        makevideo(images)
+    except:
+        clearall()
+        return "error"
+    return "ok"
 
+
+if __name__ == '__main__':
     app.run(debug=True)
-
-    # show video when finished for every environment, no need to get crazy
-    # ex - one sorting algo per server
-    #    only thing different per environment will be the button they can press
-    #    aka the sorting method displayed

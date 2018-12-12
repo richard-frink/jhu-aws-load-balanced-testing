@@ -1,14 +1,61 @@
 {% extends "bootstrap/base.html" %}
-{% block title %}This is an example page{% endblock %}
+{% block title %}Pretty Sorter{% endblock %}
 
 {% block scripts %}
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
 $(document).ready(function() {
     $("button").click(function(){
-        alert("test");
+        showprocessing();
+        $.ajax({
+            type: "POST",
+            url: "/sort",
+            data: {
+                name: "{{ algo.name }}"
+            },
+            success: function(response) {
+                var r = response
+                if (r == "error") {
+                    hideprocessing()
+                    showerror();
+                }
+                else {
+                    var y = document.getElementById("vid");
+                    y.src = "/static/sort.mp4"
+                    hideprocessing()
+                    var x = document.getElementById("sort-vid");
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                    }
+                }
+            },
+            error: function(result) {
+                hideprocessing()
+                showerror();
+            }
+        });
     });
 });
+
+function showprocessing() {
+    var y = document.getElementById("sort-vid");
+    y.style.display = "none";
+    var x = document.getElementById("processing");
+    x.style.display = "block";
+}
+
+function hideprocessing() {
+    var x = document.getElementById("processing");
+    x.style.display = "none";
+}
+
+function showerror() {
+    var x = document.getElementById("err");
+    if (x.style.display === "none") {
+        x.style.display = "block";
+    }
+}
+
 </script>
 {% endblock %}
 
@@ -19,6 +66,31 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
-    <h1>Hello, Bootstrap</h1>
-    <button>Click me</button>
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <h1 class="text-center">{{ algo.name }} sort</h1>
+    </div>
+    <div class="col-md-3"></div>
+</div>
+<div class="row">
+    <div class="col-md-5"></div>
+    <div class="col-md-2 center-block">
+        <button class="btn btn-primary center-block">sort</button>
+    </div>
+    <div class="col-md-5"></div>
+</div>
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
+        <br>
+        <video control autoplay loop style="display:none" id="sort-vid" class="center-block" width="200" height="200" controls>
+          <source id="vid" src="" type="video/mp4">
+        Your browser does not support the video tag.
+        </video>
+        <p style="display:none" class="text-center" id="processing">processing...</p>
+        <p style="display:none" class="text-center" id="err">Unexpected error occurred. Please refresh the page.</p>
+    </div>
+    <div class="col-md-3"></div>
+</div>
 {% endblock %}
